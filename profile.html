@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ecoloom - Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+
+  <nav class="bg-white p-4 shadow flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-green-600">Ecoloom</h1>
+    <div class="space-x-4">
+      <a href="buy.html" class="text-gray-700 hover:text-green-600">Buy</a>
+      <a href="sell.html" class="text-gray-700 hover:text-green-600">Sell</a>
+      <a href="signin.html" class="text-gray-700 hover:text-green-600">Logout</a>
+    </div>
+  </nav>
+
+  <div class="bg-white p-6 rounded shadow">
+    <h2 class="text-xl font-bold text-green-700 mb-4">👤 User Profile</h2>
+    <p id="user-name" class="text-lg mb-6">Loading user...</p>
+
+    <h3 class="text-lg font-semibold mb-2">🧵 Items You've Uploaded for Sale</h3>
+    <div id="user-items" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8"></div>
+
+    <h3 class="text-lg font-semibold mb-2">🧾 Your Orders</h3>
+    <div id="orders" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    let allItems = JSON.parse(localStorage.getItem("sellItems")) || [];
+    const orderIdFromCustomizePage = new URLSearchParams(window.location.search).get("orderId");
+
+    if (!user) {
+      window.location.href = "signin.html";
+    } else {
+      document.getElementById("user-name").textContent = "Welcome, " + user.name;
+      renderUserItems();
+      renderUserOrders();
+      if (orderIdFromCustomizePage) {
+        displayOrderById(orderIdFromCustomizePage);
+      }
+    }
+
+    function renderUserItems() {
+      const container = document.getElementById("user-items");
+      container.innerHTML = "";
+      const userItems = allItems.filter(item => item.user === user.email);
+
+      if (userItems.length === 0) {
+        container.innerHTML = "<p class='text-gray-500'>You haven’t uploaded any items yet.</p>";
+        return;
+      }
+
+      userItems.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "border p-4 rounded shadow bg-gray-50";
+        div.innerHTML = `
+          <img src="${item.image}" class="h-40 w-full object-cover rounded mb-2" />
+          <h4 class="font-semibold">${item.name}</h4>
+          <p class="text-gray-600">₹${item.price}</p>
+          <button onclick="removeItem(${index})" class="mt-2 text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Remove</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function removeItem(indexToRemove) {
+      const userEmail = user.email;
+      let count = -1;
+      for (let i = 0; i < allItems.length; i++) {
+        if (allItems[i].user === userEmail) {
+          count++;
+          if (count === indexToRemove) {
+            allItems.splice(i, 1);
+            break;
+          }
+        }
+      }
+      localStorage.setItem("sellItems", JSON.stringify(allItems));
+      renderUserItems();
+    }
+
+    function renderUserOrders() {
+  const buyItems = [
+    { id: 1, name: "T-Shirt", price: 200, description: "A comfortable cotton t-shirt.", image: "images/tshirt.jpg" },
+    { id: 2, name: "Jeans", price: 400, description: "Stylish blue jeans.", image: "images/jeans.jpg" },
+    { id: 3, name: "Jacket", price: 600, description: "Warm and cozy jacket for winter.", image: "images/jacket.jpg" },
+    { id: 4, name: "Dress", price: 500, description: "Elegant dress for special occasions.", image: "images/dress.jpg" },
+    { id: 5, name: "Skirt", price: 300, description: "Floral skirt for summer.", image: "images/skirt.jpg" },
+    { id: 6, name: "Shorts", price: 250, description: "Casual shorts for hot days.", image: "images/shorts.jpg" },
+    { id: 7, name: "Sweater", price: 450, description: "Soft sweater for chilly evenings.", image: "images/sweater.jpg" },
+    { id: 8, name: "Blouse", price: 350, description: "Stylish blouse for work.", image: "images/blouse.jpg" },
+    { id: 9, name: "Coat", price: 800, description: "Heavy coat for winter warmth.", image: "images/coat.jpg" },
+    { id: 10, name: "Tank Top", price: 150, description: "Lightweight tank top for summer.", image: "images/tanktop.jpg" },
+    { id: 11, name: "Cardigan", price: 550, description: "Cozy cardigan for layering.", image: "images/cardigan.jpg" },
+    { id: 12, name: "Overalls", price: 700, description: "Trendy overalls for casual wear.", image: "images/overalls.jpg" },
+    { id: 13, name: "Pajamas", price: 300, description: "Comfortable pajamas for a good night's sleep.", image: "images/pajamas.jpg" },
+    { id: 14, name: "Scarf", price: 250, description: "Warm scarf for winter.", image: "images/scarf.jpg" },
+    { id: 15, name: "Belt", price: 150, description: "Classic leather belt.", image: "images/belt.jpg" },
+    { id: 16, name: "Socks", price: 100, description: "Comfortable cotton socks.", image: "images/socks.jpg" },
+    { id: 17, name: "Swimsuit", price: 350, description: "Stylish swimsuit for the beach.", image: "images/swimsuit.jpg" },
+    { id: 18, name: "Boots", price: 700, description: "Durable boots for outdoor adventures.", image: "images/boots.jpg" },
+    { id: 19, name: "Flip Flops", price: 150, description: "Casual flip flops for summer.", image: "images/flipflops.jpg" },
+    { id: 20, name: "Hat", price: 250, description: "Fashionable hat for sunny days.", image: "images/hat.jpg" },
+    { id: 21, name: "Gloves", price: 200, description: "Warm gloves for winter.", image: "images/gloves.jpg" },
+    { id: 22, name: "Tights", price: 150, description: "Comfortable tights for layering.", image: "images/tights.jpg" },
+    { id: 23, name: "Skorts", price: 300, description: "Stylish skorts for summer.", image: "images/skorts.jpg" }
+  ];
+
+  const orders = JSON.parse(localStorage.getItem("orders")) || [];
+  const userOrders = orders.filter(order => order.buyerEmail === user.email);
+  const sellItems = JSON.parse(localStorage.getItem("sellItems")) || [];
+  const ordersContainer = document.getElementById("orders");
+
+  if (userOrders.length === 0) {
+    ordersContainer.innerHTML = '<p class="text-gray-500">You have not ordered anything yet.</p>';
+    return;
+  }
+
+  userOrders.forEach((order, index) => {
+    let product = buyItems.find(item => item.id == order.id);
+
+    // Fallback to sellItems if not found in buyItems
+    if (!product) {
+      product = sellItems.find(item => item.id == order.id);
+    }
+
+    if (product) {
+      const div = document.createElement("div");
+      div.className = "border p-4 rounded shadow bg-gray-50";
+      div.innerHTML = `
+        <img src="${product.image}" class="h-40 w-full object-cover rounded mb-2" />
+        <h4 class="font-semibold">${product.name}</h4>
+        <p class="text-gray-600">₹${product.price}</p>
+        <button onclick="removeOrder(${index})" class="mt-2 text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Remove</button>
+      `;
+      ordersContainer.appendChild(div);
+    }
+  });
+}
+
+
+    function removeOrder(orderIndex) {
+      const orders = JSON.parse(localStorage.getItem("orders")) || [];
+      orders.splice(orderIndex, 1);
+      localStorage.setItem("orders", JSON.stringify(orders));
+      renderUserOrders();
+    }
+
+    function displayOrderById(orderId) {
+      const orders = JSON.parse(localStorage.getItem("orders")) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        const ordersContainer = document.getElementById("orders");
+        const div = document.createElement("div");
+        div.className = "border p-4 rounded shadow bg-gray-50";
+        div.innerHTML = `
+          <img src="${order.image}" class="h-40 w-full object-cover rounded mb-2" />
+          <h4 class="font-semibold">${order.name}</h4>
+          <p class="text-gray-600">₹${order.price}</p>
+          <button onclick="removeOrder(${orders.indexOf(order)})" class="mt-2 text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Remove</button>
+        `;
+        ordersContainer.appendChild(div);
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ecoloom - Cart</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-green-600">Ecoloom</h1>
+    <div class="space-x-4">
+      <a href="index.html" class="text-gray-700 hover:text-green-600">Home</a>
+      <a href="buy.html" class="text-gray-700 hover:text-green-600">Buy More</a>
+    </div>
+  </nav>
+
+  <!-- Cart Section -->
+  <div class="p-6">
+    <h2 class="text-2xl font-bold mb-4">🛒 Your Cart</h2>
+    <div id="cart-items" class="space-y-4"></div>
+
+    <div class="mt-6">
+      <p class="text-xl font-semibold">Total: ₹<span id="total">0</span></p>
+      <div class="mt-3 flex flex-col sm:flex-row gap-3">
+        <button id="buy-now" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Buy Now</button>
+        <button id="clear-cart" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Clear Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cartContainer = document.getElementById('cart-items');
+    const totalDisplay = document.getElementById('total');
+    const clearCartBtn = document.getElementById('clear-cart');
+    const buyNowBtn = document.getElementById('buy-now');
+
+    function renderCart() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const sellItems = JSON.parse(localStorage.getItem('sellItems')) || [];
+      const buyItems = [
+  { id: 1, name: "T-Shirt", price: 200, description: "A comfortable cotton t-shirt.", image: "images/tshirt.jpg" },
+  { id: 2, name: "Jeans", price: 400, description: "Stylish blue jeans.", image: "images/jeans.jpg" },
+  { id: 3, name: "Jacket", price: 600, description: "Warm and cozy jacket for winter.", image: "images/jacket.jpg" },
+  { id: 4, name: "Dress", price: 500, description: "Elegant dress for special occasions.", image: "images/dress.jpg" },
+  { id: 5, name: "Skirt", price: 300, description: "Floral skirt for summer.", image: "images/skirt.jpg" },
+  { id: 6, name: "Shorts", price: 250, description: "Casual shorts for hot days.", image: "images/shorts.jpg" },
+  { id: 7, name: "Sweater", price: 450, description: "Soft sweater for chilly evenings.", image: "images/sweater.jpg" },
+  { id: 8, name: "Blouse", price: 350, description: "Stylish blouse for work.", image: "images/blouse.jpg" },
+  { id: 9, name: "Coat", price: 800, description: "Heavy coat for winter warmth.", image: "images/coat.jpg" },
+  { id: 10, name: "Tank Top", price: 150, description: "Lightweight tank top for summer.", image: "images/tanktop.jpg" },
+  { id: 11, name: "Cardigan", price: 550, description: "Cozy cardigan for layering.", image: "images/cardigan.jpg" },
+  { id: 12, name: "Overalls", price: 700, description: "Trendy overalls for casual wear.", image: "images/overalls.jpg" },
+  { id: 13, name: "Pajamas", price: 300, description: "Comfortable pajamas for a good night's sleep.", image: "images/pajamas.jpg" },
+  { id: 14, name: "Scarf", price: 250, description: "Warm scarf for winter.", image: "images/scarf.jpg" },
+  { id: 15, name: "Belt", price: 150, description: "Classic leather belt.", image: "images/belt.jpg" },
+  { id: 16, name: "Socks", price: 100, description: "Comfortable cotton socks.", image: "images/socks.jpg" },
+  { id: 17, name: "Swimsuit", price: 350, description: "Stylish swimsuit for the beach.", image: "images/swimsuit.jpg" },
+  { id: 18, name: "Boots", price: 700, description: "Durable boots for outdoor adventures.", image: "images/boots.jpg" },
+  { id: 19, name: "Flip Flops", price: 150, description: "Casual flip flops for summer.", image: "images/flipflops.jpg" },
+  { id: 20, name: "Hat", price: 250, description: "Fashionable hat for sunny days.", image: "images/hat.jpg" },
+  { id: 21, name: "Gloves", price: 200, description: "Warm gloves for winter.", image: "images/gloves.jpg" },
+  { id: 22, name: "Tights", price: 150, description: "Comfortable tights for layering.", image: "images/tights.jpg" },
+  { id: 23, name: "Skorts", price: 300, description: "Stylish skorts for summer.", image: "images/skorts.jpg" }
+];
+
+      cartContainer.innerHTML = '';
+      let total = 0;
+
+      if (cart.length === 0) {
+        cartContainer.innerHTML = '<p class="text-gray-500">Your cart is empty.</p>';
+        totalDisplay.textContent = '0';
+        return;
+      }
+
+      cart.forEach((item, index) => {
+        let fullItem;
+
+        // Try finding the item in sellItems first
+        if (item.id) {
+          fullItem = sellItems.find(entry => entry.id === item.id); // Item from sellItems
+        }
+
+        // If not found in sellItems, try buyItems
+        if (!fullItem && item.id) {
+          fullItem = buyItems.find(entry => entry.id === item.id); // Item from buyItems
+        }
+
+        // If still not found, treat it as a direct cart item (fallback)
+        if (!fullItem) {
+          fullItem = item; // Direct item from cart
+        }
+
+        if (!fullItem) {
+          console.error('Item not found:', item);
+          return;
+        }
+
+        total += fullItem.price || 0;
+
+        const div = document.createElement('div');
+        div.className = "bg-white p-4 rounded shadow flex items-center justify-between";
+        div.innerHTML = `
+          <div class="flex items-center gap-4">
+            <img src="${fullItem.image}" alt="${fullItem.name}" class="w-20 h-20 object-cover rounded" />
+            <div>
+              <h3 class="text-lg font-semibold">${fullItem.name}</h3>
+              <p class="text-green-700 font-bold">₹${fullItem.price}</p>
+            </div>
+          </div>
+          <button class="text-red-500 hover:underline" onclick="removeItem(${index})">Remove</button>
+        `;
+        cartContainer.appendChild(div);
+      });
+
+      totalDisplay.textContent = total;
+    }
+
+    function removeItem(index) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.splice(index, 1); // Remove the item from cart
+      localStorage.setItem('cart', JSON.stringify(cart)); // Update the cart in localStorage
+      renderCart(); // Re-render the cart
+    }
+
+    clearCartBtn.addEventListener('click', () => {
+      localStorage.removeItem('cart'); // Remove all items from cart
+      renderCart(); // Re-render the cart to show it is empty
+    });
+
+    buyNowBtn.addEventListener('click', () => {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (!currentUser) {
+        alert("Please sign in to complete your purchase.");
+        window.location.href = "signin.html"; // Redirect to sign-in page
+        return;
+      }
+
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+
+      sessionStorage.setItem("confirmCart", JSON.stringify(cart)); // Save cart for confirmation
+      window.location.href = "confirm-order.html"; // Redirect to confirm order page
+    });
+
+    renderCart(); // Initial render of the cart page
+  </script>
+
+</body>
+</html>

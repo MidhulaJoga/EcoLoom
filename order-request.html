@@ -1,0 +1,51 @@
+<!-- order-request.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Request</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-6 rounded shadow max-w-md w-full">
+    <h2 class="text-xl font-bold mb-4">Order Request Details</h2>
+    <div id="order-details" class="space-y-4 text-gray-800"></div>
+
+    <div class="flex justify-between mt-6">
+      <button id="accept-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Accept</button>
+      <button id="decline-btn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Decline</button>
+    </div>
+  </div>
+
+  <script>
+    const order = JSON.parse(localStorage.getItem("orderRequest"));
+    const orderDetails = document.getElementById("order-details");
+
+    orderDetails.innerHTML = `
+      <p><strong>Name:</strong> ${order.name}</p>
+      <p><strong>Email:</strong> ${order.email}</p>
+      <p><strong>Description:</strong> ${order.description}</p>
+      <p><strong>Address:</strong> ${order.address}</p>
+      <p><strong>Price:</strong> ₹${order.price}</p>
+      <div><strong>Uploaded Image:</strong><br>
+        <img src="${order.image}" alt="Uploaded" class="w-64 border mt-2">
+      </div>
+    `;
+
+    document.getElementById("accept-btn").addEventListener("click", () => {
+      window.opener.postMessage({ orderResult: "accepted" }, "*");
+      alert("Order Confirmed ✅");
+      window.close();
+    });
+
+    document.getElementById("decline-btn").addEventListener("click", () => {
+      const reason = prompt("Reason:");
+      if (reason) {
+        window.opener.postMessage({ orderResult: "declined", reason: reason }, "*");
+        alert("Order Declined ❌");
+        window.close();
+      }
+    });
+  </script>
+</body>
+</html>

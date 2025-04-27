@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ecoloom - Buy Clothes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-green-600">Ecoloom</h1>
+    <div class="space-x-4">
+        <a href="index.html" class="text-gray-700 hover:text-green-600">Home</a>
+        <a href="profile.html" class="text-gray-700 hover:text-green-600">Profile</a>
+        <a href="cart.html" class="text-gray-700 hover:text-green-600">Cart 🛒</a>
+    </div>
+  </nav>
+
+  <!-- Search & Items -->
+  <div class="p-6">
+    <input type="text" id="search" placeholder="Search clothes..." class="w-full p-2 border rounded mb-4 shadow-sm" />
+    
+    <h2 class="text-xl font-semibold mb-4">🧥 Available Clothes</h2>
+    <div id="items-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </div>
+
+  <script>
+    const sampleItems = [
+      { id: 1, name: "T-Shirt", price: 200, description: "A comfortable cotton t-shirt.", image: "images/tshirt.jpg" },
+      { id: 2, name: "Jeans", price: 400, description: "Stylish blue jeans.", image: "images/jeans.jpg" },
+      { id: 3, name: "Jacket", price: 600, description: "Warm and cozy jacket for winter.", image: "images/jacket.jpg" },
+      { id: 4, name: "Dress", price: 500, description: "Elegant dress for special occasions.", image: "images/dress.jpg" },
+      { id: 5, name: "Skirt", price: 300, description: "Floral skirt for summer.", image: "images/skirt.jpg" },
+      { id: 6, name: "Shorts", price: 250, description: "Casual shorts for hot days.", image: "images/shorts.jpg" },
+      { id: 7, name: "Sweater", price: 450, description: "Soft sweater for chilly evenings.", image: "images/sweater.jpg" },
+      { id: 8, name: "Blouse", price: 350, description: "Stylish blouse for work.", image: "images/blouse.jpg" },
+      { id: 9, name: "Coat", price: 800, description: "Heavy coat for winter warmth.", image: "images/coat.jpg" },
+      { id: 10, name: "Tank Top", price: 150, description: "Lightweight tank top for summer.", image: "images/tanktop.jpg" },
+      { id: 11, name: "Cardigan", price: 550, description: "Cozy cardigan for layering.", image: "images/cardigan.jpg" },
+      { id: 12, name: "Overalls", price: 700, description: "Trendy overalls for casual wear.", image: "images/overalls.jpg" },
+      { id: 13, name: "Pajamas", price: 300, description: "Comfortable pajamas for a good night's sleep.", image: "images/pajamas.jpg" },
+      { id: 14, name: "Scarf", price: 250, description: "Warm scarf for winter.", image: "images/scarf.jpg" },
+      { id: 15, name: "Belt", price: 150, description: "Classic leather belt.", image: "images/belt.jpg" },
+      { id: 16, name: "Socks", price: 100, description: "Comfortable cotton socks.", image: "images/socks.jpg" },
+      { id: 17, name: "Swimsuit", price: 350, description: "Stylish swimsuit for the beach.", image: "images/swimsuit.jpg" },
+      { id: 18, name: "Boots", price: 700, description: "Durable boots for outdoor adventures.", image: "images/boots.jpg" },
+      { id: 19, name: "Flip Flops", price: 150, description: "Casual flip flops for summer.", image: "images/flipflops.jpg" },
+      { id: 20, name: "Hat", price: 250, description: "Fashionable hat for sunny days.", image: "images/hat.jpg" },
+      { id: 21, name: "Gloves", price: 200, description: "Warm gloves for winter.", image: "images/gloves.jpg" },
+      { id: 22, name: "Tights", price: 150, description: "Comfortable tights for layering.", image: "images/tights.jpg" },
+      { id: 23, name: "Skorts", price: 300, description: "Stylish skorts for summer.", image: "images/skorts.jpg" }
+    ];
+
+    const uploadedItems = JSON.parse(localStorage.getItem("sellItems")) || [];
+    const allItems = [...sampleItems, ...uploadedItems];
+
+    const container = document.getElementById('items-container');
+    const searchInput = document.getElementById('search');
+
+    function displayItems(items) {
+      container.innerHTML = "";
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "bg-white rounded shadow p-4 flex flex-col";
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" class="w-full h-52 object-cover object-center rounded mb-3" />
+          <h3 class="text-lg font-semibold">${item.name}</h3>
+          <p class="text-sm text-gray-500">${item.description || ''}</p>
+          <p class="text-green-700 font-bold mt-2">₹${item.price}</p>
+          <button class="mt-auto bg-green-600 text-white py-1 px-2 rounded hover:bg-green-700" onclick='addToCart(${JSON.stringify(item)})'>Add to Cart</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function addToCart(item) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+      if (item.id) {
+        cart.push({ id: item.id });
+      } else {
+        cart.push({
+          name: item.name,
+          price: item.price,
+          image: item.image
+        });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert(`${item.name} has been added to your cart!`);
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const filtered = allItems.filter(item => item.name.toLowerCase().includes(query));
+      displayItems(filtered);
+    });
+
+    displayItems(allItems);
+  </script>
+
+</body>
+</html>
