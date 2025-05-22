@@ -89,21 +89,7 @@
     });
 
     contactBtn.addEventListener('click', () => {
-      const user = JSON.parse(localStorage.getItem("currentUser")) || {
-        name: "Test User",
-        email: "test@example.com"
-      };
-      localStorage.setItem("contactRequest", JSON.stringify(user));
-      const contactWindow = window.open("contact-request.html", "_blank", "width=400,height=400");
-
-      window.addEventListener("message", function handler(event) {
-        if (event.data.contactResult === "accepted") {
-          contactResponse.textContent = "✅ Contact them through ecoloom@gmail.com";
-        } else if (event.data.contactResult === "declined") {
-          contactResponse.textContent = "❌ Try again";
-        }
-        window.removeEventListener("message", handler);
-      });
+      alert("Contact through ecoloom@gmail.com or 9951277132");
     });
 
     helpBtn.addEventListener('click', () => {
@@ -144,7 +130,7 @@
         };
 
         localStorage.setItem("orderRequest", JSON.stringify(orderData));
-        window.open("order-request.html", "_blank", "width=500,height=600");
+        alert("Your order is confirmed");
         confirmOrderModal.classList.add('hidden');
       };
       if (imageFile) {
@@ -155,18 +141,17 @@
     });
 
     window.addEventListener("message", (event) => {
-  if (event.data.orderResult === "accepted") {
-    contactResponse.textContent = "✅ Order Confirmed!";
-    contactResponse.classList.remove('text-gray-800');
-    contactResponse.classList.add('text-green-700');
-    declineReasonDiv.classList.add('hidden');
-  } else if (event.data.orderResult === "declined") {
-    declineReasonDiv.classList.remove('hidden');
-    declineMessage.textContent = event.data.reason;
-    contactResponse.textContent = "";
-  }
-});
-
+      if (event.data.orderResult === "accepted") {
+        contactResponse.textContent = "✅ Order Confirmed!";
+        contactResponse.classList.remove('text-gray-800');
+        contactResponse.classList.add('text-green-700');
+        declineReasonDiv.classList.add('hidden');
+      } else if (event.data.orderResult === "declined") {
+        declineReasonDiv.classList.remove('hidden');
+        declineMessage.textContent = event.data.reason;
+        contactResponse.textContent = "";
+      }
+    });
   </script>
 </body>
 </html>
